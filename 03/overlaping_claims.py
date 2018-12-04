@@ -28,9 +28,9 @@ claimRegex = re.compile(r'#(\d+) @ (\d+),(\d+): (\d+)x(\d+)')
 def claimFromEncodedStr(strEncodedClaim):
     m = claimRegex.match(strEncodedClaim)
     return Claim(int(m.group(1)), int(m.group(2)), int(m.group(3)), int(m.group(4)), int(m.group(5)))
-    
-def appendPositionToClaimMap(claimMap, claim, col, row):
 
+
+def appendPositionToClaimMap(claimMap, alone, claim, col, row):
     if not col in claimMap:
         claimMap[col] = {}
 
@@ -38,23 +38,33 @@ def appendPositionToClaimMap(claimMap, claim, col, row):
 
     if row in innerMap:
         innerMap[row].add(claim.claimId)
+        for claimId in innerMap[row]:
+            if claimId in alone:
+                alone.remove(claimId)
     else:
         innerMap[row] = {claim.claimId}
 
-def appendClaimToClaimMap(claimMap, claim):
+
+def appendClaimToClaimMap(claimMap, alone, claim):
     for c in range(0, claim.colLen):
         for r in range(0, claim.rowLen):
-            appendPositionToClaimMap(claimMap, claim, claim.col + c, claim.row + r)
+            appendPositionToClaimMap(claimMap, alone, claim, claim.col + c, claim.row + r)
+
 
 claims = (seq(sys.stdin)
                 .map(lambda line: line.rstrip())  # remove the newline that readlines keeps
                 .filter(lambda line: claimRegex.match(line))  # remove the newline that readlines keeps
                 .map(lambda line: claimFromEncodedStr(line))     
+                .list() # save to a list, because multiple iterations of sys.stdin is not possible
              )
 
 claimMap = {}
+alone = set() 
 for claim in claims:
-    appendClaimToClaimMap(claimMap, claim)
+    alone.add(claim.claimId)
+
+for claim in claims:
+    appendClaimToClaimMap(claimMap, alone, claim)
 
 numContestedClaims = 0
 for c in claimMap:
@@ -64,6 +74,7 @@ for c in claimMap:
             numContestedClaims += 1
 
 print(f'number of inches with two or more claims: {numContestedClaims}')
+print(alone)
 
 
 
