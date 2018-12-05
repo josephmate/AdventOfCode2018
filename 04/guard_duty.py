@@ -10,8 +10,6 @@ guardLogs = (seq(sys.stdin)
              )
 guardLogs.sort()
 
-
-claimRegex = re.compile(r'#(\d+) @ (\d+),(\d+): (\d+)x(\d+)')
 # [1518-03-18 00:01] Guard #89 begins shift
 gaurdStartRegex = re.compile(r'\[\d\d\d\d-\d\d-\d\d \d\d:\d\d\] Guard #(\d+) begins shift')
 # [1518-03-18 00:35] falls asleep
@@ -31,6 +29,8 @@ class GuardShift:
 # map of date to the record of the guard's shift that date
 # dates are from 0 to number of days recorded - 1
 # exploits the fact that there is an entry for every day
+# Treating the date as number instead of date object greatly simplifies
+# dealing with the dates.
 ###########################
 sleepMap = [] 
 for guardLog in guardLogs:
@@ -102,3 +102,26 @@ print(f'guard {mostTiredGuard} slept {freqOfMostSleep} times on minute {minuteWi
 answer = minuteWithMostFreqSleeps*mostTiredGuard
 print(f'{minuteWithMostFreqSleeps}*{mostTiredGuard}={answer}')
 
+# map of guardId -> minute -> frequency slept
+allGuardSleepFreq = {}
+for guardId in guardSleepTimes:
+    allGuardSleepFreq[guardId] = {}
+
+for sleepEntry in sleepMap:
+    for minute in range(0, 60):
+        if sleepEntry.sleeping[minute]:
+            if minute in allGuardSleepFreq[sleepEntry.guardId]:
+                allGuardSleepFreq[sleepEntry.guardId][minute] += 1
+            else:
+                allGuardSleepFreq[sleepEntry.guardId][minute] = 1
+freqOfMostSleep = 0
+for guardId in allGuardSleepFreq:
+    for minute in allGuardSleepFreq[guardId]:
+        if allGuardSleepFreq[guardId][minute] > freqOfMostSleep:
+            freqOfMostSleep = allGuardSleepFreq[guardId][minute]
+            minuteWithMostFreqSleeps = minute
+            guardWithHighestFreq = guardId
+
+print(f'guard {guardWithHighestFreq} slept {freqOfMostSleep} times on minute {minuteWithMostFreqSleeps}')
+answer = minuteWithMostFreqSleeps*guardWithHighestFreq
+print(f'{minuteWithMostFreqSleeps}*{guardWithHighestFreq}={answer}')
