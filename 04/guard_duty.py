@@ -27,8 +27,11 @@ class GuardShift:
         for i in range(0, 60):
             self.sleeping.append(False)
 
-
-# map of date 
+###########################
+# map of date to the record of the guard's shift that date
+# dates are from 0 to number of days recorded - 1
+# exploits the fact that there is an entry for every day
+###########################
 sleepMap = [] 
 for guardLog in guardLogs:
     if gaurdStartRegex.match(guardLog):
@@ -58,4 +61,44 @@ for sleepEntry in sleepMap:
             sys.stdout.write('#')
     sys.stdout.write('\n')
     counter+=1
-        
+   
+guardSleepTimes = {}
+for sleepEntry in sleepMap:
+    minutesAsleep = 0
+    for isSleeping in sleepEntry.sleeping:
+        if isSleeping:
+            minutesAsleep += 1
+    if sleepEntry.guardId in guardSleepTimes:
+        guardSleepTimes[sleepEntry.guardId] += minutesAsleep
+    else:
+        guardSleepTimes[sleepEntry.guardId] = minutesAsleep
+
+mostMinutesSlept = 0
+for guardId in guardSleepTimes:
+    if guardSleepTimes[guardId] > mostMinutesSlept:
+        mostTiredGuard = guardId
+        mostMinutesSlept = guardSleepTimes[guardId]
+
+print(f'guard {mostTiredGuard} slept {mostMinutesSlept} minutes')
+
+minuteSleepFreq = {}
+for sleepEntry in sleepMap:
+    if sleepEntry.guardId == mostTiredGuard:
+        for minute in range(0, 60):
+            if sleepEntry.sleeping[minute]:
+                if minute in minuteSleepFreq:
+                    minuteSleepFreq[minute] += 1
+                else:
+                    minuteSleepFreq[minute] = 1
+
+
+freqOfMostSleep = 0
+for minute in minuteSleepFreq:
+    if minuteSleepFreq[minute] > freqOfMostSleep:
+        freqOfMostSleep = minuteSleepFreq[minute]
+        minuteWithMostFreqSleeps = minute
+
+print(f'guard {mostTiredGuard} slept {freqOfMostSleep} times on minute {minuteWithMostFreqSleeps}')
+answer = minuteWithMostFreqSleeps*mostTiredGuard
+print(f'{minuteWithMostFreqSleeps}*{mostTiredGuard}={answer}')
+
