@@ -4,8 +4,6 @@ from functional import seq
 from collections import deque
 
 def willRecact(a, b):
-    #print(f'{a} != {b}: {a != b}')
-    #print(f'{a.upper()} == {b.upper()}: {a.upper() == b.upper()}')
     return ( a != b
             and a.upper() == b.upper()
             )
@@ -42,7 +40,7 @@ dq.rotate(-1)
 print(dq)
 
 while True:
-    print(dq)
+    #print(dq)
     # arrived at the end, nothing left to read
     currentChar = dq.popleft()
     if currentChar == "END":
@@ -56,7 +54,7 @@ while True:
         break;
 
     if willRecact(currentChar, nextChar):
-        print(f'{currentChar} reacted with {nextChar}')
+        #print(f'{currentChar} reacted with {nextChar}')
         # do not put the characters back
         # need to rotate to left once because maybe the previous character might react
         # example
@@ -67,12 +65,16 @@ while True:
         # rotating back one
         # vv
         # aA
-        dq.rotate(-1)
+        dq.rotate(1)
+        #print('rotate -1: ' + str(dq))
         checkFirst = dq.popleft()
+        #print('popleft: ' + str(dq))
         dq.appendleft(checkFirst)
+        #print(f'appendleft {checkFirst}: ' + str(dq))
         # make sure we're not at the "FIRST"
         if checkFirst == "FIRST":
-            dq.rotate(1)
+            dq.rotate(-1)
+            #print(f'rotate 1: ' + str(dq))
     # a reaction did not occur so we can advance the 'pointer'
     else:
         # VV
