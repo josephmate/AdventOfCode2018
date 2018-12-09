@@ -25,7 +25,18 @@ class TreeNode:
         return (seq(self.metadata).sum()
                     + seq(self.children).map(lambda subTree: subTree.sum()).sum()
                 )
-    
+
+    def value(self):
+        if len(self.children) == 0:
+            return seq(self.metadata).sum()
+        
+        res = 0
+        for childIdx in self.metadata:
+            childIdx = childIdx - 1
+            if childIdx < len(self.children):
+                res += self.children[childIdx].value()
+
+        return res
 
 
 def parseTreeSpec(treeSpec, index):
@@ -57,5 +68,5 @@ treeSpec = (seq(sys.stdin.readline().rstrip().split(' '))
 print(treeSpec)
 
 (tree, indexesConsumed) = parseTreeSpec(treeSpec, 0)
-print(tree)
 print(tree.sum())
+print(tree.value())
