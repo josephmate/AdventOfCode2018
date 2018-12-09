@@ -69,3 +69,19 @@ maxAreaPoint = max(areas, key=lambda point: areas[point])
 
 print(maxAreaPoint)
 print(areas[maxAreaPoint])
+
+
+
+
+numInRegion = 0
+for x in range(0, maxX + 2):
+    for y in range(0, maxY + 2):
+        currPoint = Point(x,y)
+        manDistSum = (seq(points)
+                        .map(lambda point: currPoint.manhattanDistance(point))
+                        .sum()
+                     )
+        if manDistSum < 10000:
+            numInRegion += 1
+
+print(numInRegion)
