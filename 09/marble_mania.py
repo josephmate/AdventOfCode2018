@@ -1,6 +1,7 @@
 import sys
 import re
 from functional import seq
+from collections import deque
 
 
 class GameSpec:
@@ -17,7 +18,7 @@ class GameSpec:
 gameSpecRegex = re.compile(r'(\d+) players; last marble is worth (\d+) points')
 def gameSpecFromStr(gameSpecStr):
     m = gameSpecRegex.match(gameSpecStr)
-    return GameSpec(m.group(1), m.group(2))
+    return GameSpec(int(m.group(1)), int(m.group(2)))
 
 gameSpecs = (seq(sys.stdin)
                 .map(lambda line: line.rstrip())
@@ -27,7 +28,21 @@ gameSpecs = (seq(sys.stdin)
 
 def solveGameSpec(gameSpec):
     print(gameSpec)
+    dq = deque()
+    dq.append(0)
+    print(dq)
+    for i in range(1, gameSpec.lastMarble + 1):
+        # Then, each Elf takes a turn placing the lowest-numbered remaining
+        # marble into the circle between the marbles that are 1 and 2 marbles
+        # clockwise of the current marble. (When the circle is large enough,
+        # this means that there is one marble between the marble that was just
+        # placed and the current marble.) The marble that was just placed then
+        # becomes the current marble.
+        dq.rotate(-1)
+        dq.append(i)
+        print(dq)
+        
 
 
-for gameSpec in gameSpecs:
-    solveGameSpec(gameSpec)
+
+solveGameSpec(gameSpecs[0])
