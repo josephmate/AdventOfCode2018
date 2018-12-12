@@ -60,15 +60,39 @@ def subChronalCharge(grid, size):
                 maxVal = totalPowerGrid[y][x]
                 maxX = x
                 maxY = y
+    return maxX + 1, maxY + 1, maxVal
 
+def reuseComputeTotalPower(grid, previousTotalPowerGrid, size):
+    totalPowerGrid = []
+    for y in range(0, 300 - size + 1):
+        xs = []
+        for x in range(0, 300 - size + 1):
+            totalPower = previousTotalPowerGrid[y][x]
+            for increment in range(0, size-1):
+                totalPower += grid[y+size-1][x+increment]
+                totalPower += grid[y+increment][x+size-1]
+            xs.append(totalPower)
+        totalPowerGrid.append(xs)
+    return totalPowerGrid
+
+def findMax(grid, size):
+    maxVal = 300 * 300 * - 5 - 1
+    for y in range(0, 300-size+1):
+        for x in range(0, 300-size+1):
+            if grid[y][x] > maxVal:
+                maxVal = grid[y][x]
+                maxX = x
+                maxY = y
     return maxX + 1, maxY + 1, maxVal
 
 def chronalCharge(gridSerial):
     grid = computeGrid(gridSerial)
+    currentTotalPowerGrid = grid
 
     maxVal = 300 * 300 * - 5 - 1
-    for size in range(0, 300):
-        newX, newY, newVal = subChronalCharge(grid, size)
+    for size in range(1, 300+1):
+        currentTotalPowerGrid = reuseComputeTotalPower(grid, currentTotalPowerGrid, size)
+        newX, newY, newVal = findMax(currentTotalPowerGrid, size)
         if newVal > maxVal:
             maxX = newX
             maxY = newY
