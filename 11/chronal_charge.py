@@ -85,6 +85,24 @@ def findMax(grid, size):
                 maxY = y
     return maxX + 1, maxY + 1, maxVal
 
+# i noticed I might be able to make this even faster by using all the previousPowergrid, and the previousPrevious power grid
+# supose you add previousPowerGrid(+0,+0); (0,1); (1,0); and (1,1)A
+# size 3 using 2:
+# 1 2 1
+# 2 4 2
+# 1 2 1
+# size 4 using 3:
+# 1 2 2 1
+# 2 4 4 2
+# 2 4 4 2
+# 1 2 2 1
+# size 5 using 4:
+# 1 2 2 2 1
+# 2 4 4 4 2
+# 2 4 4 4 2
+# 2 4 4 4 2
+# 1 2 2 2 1
+# notice you can use, 4 previous-previous to get rid of the double count
 def chronalCharge(gridSerial):
     grid = computeGrid(gridSerial)
     currentTotalPowerGrid = grid
@@ -99,7 +117,7 @@ def chronalCharge(gridSerial):
             maxSize = size
             maxVal = newVal
 
-    return maxX + 1, maxY + 1, size, maxVal
+    return maxX, maxY, maxSize, maxVal
 
 
 
