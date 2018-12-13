@@ -62,7 +62,7 @@ def subChronalCharge(grid, size):
                 maxY = y
     return maxX + 1, maxY + 1, maxVal
 
-def reuseComputeTotalPower(grid, previousTotalPowerGrid, size):
+def slowerReuseComputeTotalPower(grid, previousTotalPowerGrid, size):
     totalPowerGrid = []
     for y in range(0, 300 - size + 1):
         xs = []
@@ -70,7 +70,46 @@ def reuseComputeTotalPower(grid, previousTotalPowerGrid, size):
             totalPower = previousTotalPowerGrid[y][x]
             for increment in range(0, size-1):
                 totalPower += grid[y+size-1][x+increment]
-                totalPower += grid[y+increment][x+size-1]
+                # don't double count the edge piece
+                if not increment == size-1:
+                    totalPower += grid[y+increment][x+size-1]
+            xs.append(totalPower)
+        totalPowerGrid.append(xs)
+    return totalPowerGrid
+
+# increasing
+# x ----->
+# 
+# 1 2 2 2 1   y increasing
+# 2 4 4 4 2   |
+# 2 4 4 4 2   |
+# 2 4 4 4 2   v
+# 1 2 2 2 1
+def fastReuseComputeTotalPower(previous, current, size):
+    totalPowerGrid = []
+    for y in range(0, 300 - size + 1):
+        xs = []
+        for x in range(0, 300 - size + 1):
+            totalPower = 0
+            for subY in range (0, 2):
+                for subX in range (0, 2):
+                    totalPower += current[y+subY][x+subX]
+            # at this point totalPower has counted each cell for size 5
+            # this many times:
+            # 1 2 2 2 1
+            # 2 4 4 4 2
+            # 2 4 4 4 2
+            # 2 4 4 4 2
+            # 1 2 2 2 1
+            # need to correct it with 4, 3x3=(size-2)x(size-2)
+            # 0 1 1 1 0     0 1 1 1 0   0 0 0 0 0   0 0 0 0 0   0 0 0 0 0
+            # 1 2 3 2 1     0 1 1 1 0   0 0 1 1 1   0 0 0 0 0   1 1 1 0 0
+            # 1 3 4 3 1  =  0 1 1 1 0   0 0 1 1 1   0 1 1 1 0   1 1 1 0 0
+            # 1 2 3 2 1     0 0 0 0 0   0 0 1 1 1   0 1 1 1 0   1 1 1 0 0
+            # 0 1 1 1 0     0 0 0 0 0   0 0 0 0 0   0 1 1 1 0   0 0 0 0 0
+            # looks like my idea doesnt work
+            # we might have to do everything with the slower method
+
             xs.append(totalPower)
         totalPowerGrid.append(xs)
     return totalPowerGrid
@@ -105,11 +144,16 @@ def findMax(grid, size):
 # notice you can use, 4 previous-previous to get rid of the double count
 def chronalCharge(gridSerial):
     grid = computeGrid(gridSerial)
-    currentTotalPowerGrid = grid
+    current = grid
 
     maxVal = 300 * 300 * - 5 - 1
     for size in range(1, 300+1):
-        currentTotalPowerGrid = reuseComputeTotalPower(grid, currentTotalPowerGrid, size)
+        tmp = current
+        if size == 2 or size == 3:
+            current = slowReuseComputeTotalPower(grid, currentTotalPowerGrid, size)
+        else:
+            current = fastComputeTotalPower(prev, current, size)
+        prev = tmp
         newX, newY, newVal = findMax(currentTotalPowerGrid, size)
         if newVal > maxVal:
             maxX = newX
