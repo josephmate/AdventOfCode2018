@@ -2,6 +2,7 @@ import sys
 import re
 from functional import seq
 from collections import deque
+import time
 
 DEBUG = False
 
@@ -68,7 +69,7 @@ def slowerReuseComputeTotalPower(grid, previousTotalPowerGrid, size):
         xs = []
         for x in range(0, 300 - size + 1):
             totalPower = previousTotalPowerGrid[y][x]
-            for increment in range(0, size-1):
+            for increment in range(0, size):
                 totalPower += grid[y+size-1][x+increment]
                 # don't double count the edge piece
                 if not increment == size-1:
@@ -96,17 +97,23 @@ def fastReuseComputeTotalPower(previous, current, size):
                     totalPower += current[y+subY][x+subX]
             # at this point totalPower has counted each cell for size 5
             # this many times:
-            # 1 2 2 2 1
-            # 2 4 4 4 2
-            # 2 4 4 4 2
-            # 2 4 4 4 2
-            # 1 2 2 2 1
+            # 1 2 2 2 1     1 1 1 1 0   0 1 1 1 1   0 0 0 0 0   0 0 0 0 0
+            # 2 4 4 4 2     1 1 1 1 0   0 1 1 1 1   1 1 1 1 0   0 1 1 1 1
+            # 2 4 4 4 2  =  1 1 1 1 0 + 0 1 1 1 1 + 1 1 1 1 0 + 0 1 1 1 1
+            # 2 4 4 4 2     1 1 1 1 0   0 1 1 1 1   1 1 1 1 0   0 1 1 1 1
+            # 1 2 2 2 1     0 0 0 0 0   0 0 0 0 0   1 1 1 1 0   0 1 1 1 1
             # need to correct it with 4, 3x3=(size-2)x(size-2)
             # 0 1 1 1 0     0 1 1 1 0   0 0 0 0 0   0 0 0 0 0   0 0 0 0 0
             # 1 2 3 2 1     0 1 1 1 0   0 0 1 1 1   0 0 0 0 0   1 1 1 0 0
-            # 1 3 4 3 1  =  0 1 1 1 0   0 0 1 1 1   0 1 1 1 0   1 1 1 0 0
+            # 1 3 4 3 1  =  0 1 1 1 0 + 0 0 1 1 1 + 0 1 1 1 0 + 1 1 1 0 0
             # 1 2 3 2 1     0 0 0 0 0   0 0 1 1 1   0 1 1 1 0   1 1 1 0 0
             # 0 1 1 1 0     0 0 0 0 0   0 0 0 0 0   0 1 1 1 0   0 0 0 0 0
+            # now subtracting them
+            # 1 2 2 2 1     0 1 1 1 0     1 1 1 1 1
+            # 2 4 4 4 2     1 2 3 2 1     1 2 1 2 1
+            # 2 4 4 4 2  -  1 3 4 3 1  =  1 1 0 1 1
+            # 2 4 4 4 2     1 2 3 2 1     1 2 1 2 1
+            # 1 2 2 2 1     0 1 1 1 0     1 1 1 1 1
             # looks like my idea doesnt work
             # we might have to do everything with the slower method
 
@@ -148,18 +155,19 @@ def chronalCharge(gridSerial):
 
     maxVal = 300 * 300 * - 5 - 1
     for size in range(1, 300+1):
+        t1 = int(round(time.time()))
         tmp = current
-        if size == 2 or size == 3:
-            current = slowReuseComputeTotalPower(grid, currentTotalPowerGrid, size)
-        else:
-            current = fastComputeTotalPower(prev, current, size)
+        if size >= 2:
+            current = slowerReuseComputeTotalPower(grid, current, size)
         prev = tmp
-        newX, newY, newVal = findMax(currentTotalPowerGrid, size)
+        newX, newY, newVal = findMax(current, size)
         if newVal > maxVal:
             maxX = newX
             maxY = newY
             maxSize = size
             maxVal = newVal
+        t2 = int(round(time.time()))
+        print(f'size {size} took {t2-t1} seconds to solve')
 
     return maxX, maxY, maxSize, maxVal
 
