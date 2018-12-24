@@ -45,8 +45,8 @@ for line in sys.stdin:
 #print(transformMap)
 
 def getMinMax(state): 
-    minPosn = len(state)
-    maxPosn = -len(state)
+    minPosn = float("inf")
+    maxPosn = float("-inf")
     for key in state:
         if key < minPosn:
             minPosn = key
@@ -85,7 +85,9 @@ def printState(state, minPosn, maxPosn):
 for i in range(0, 50000000000):
     state = iterateGeneration(state, minPosn, maxPosn, transformMap)
     (minPosn, maxPosn) = getMinMax(state)
-    printState(state, minPosn, maxPosn)
+    #print(minPosn)
+    #print(maxPosn)
+    #printState(state, minPosn, maxPosn)
 
 soln = 0
 for i in range(minPosn, maxPosn + 1):
