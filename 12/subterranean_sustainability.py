@@ -10,7 +10,8 @@ def initialStateRaw(stateStr, startposn):
     initialState = {}
     posn = startposn
     for char in list(stateStr):
-        initialState[posn] = char
+        if char == PLANT:
+            initialState[posn] = char
         posn += 1
 
     return initialState
@@ -99,7 +100,12 @@ def sumSolution(state, minPosn, maxPosn):
 # 50,000,000,000 - 41 = 49999999959
 # 50,000,000,000 + 96 = 50000000096
  
-solnState = initialStateRaw('###.........###..........###..................................................###.........###.......###................................###', 49999999959)
+solnState = initialStateRaw(
+    '###.........###..........###..................................................###.........###.......###................................###',
+    49999999959)
+#                              ###          ###
+#                              #  ###       #  ###
+#                              #  #  ###    #  #  ###
 print(sumSolution(solnState, 49999999959, 50000000096))
 
 #printState(state, minPosn, maxPosn)
