@@ -6,16 +6,19 @@ from collections import deque
 PLANT = "#"
 DEAD = "."
 
-initialStateRegex = re.compile(r'initial state: (.*)')
-def initialStateFromStr(starStr):
-    m = initialStateRegex.match(starStr)
+def initialStateRaw(stateStr, startposn):
     initialState = {}
-    posn = 0
-    for char in list(m.group(1)):
+    posn = startposn
+    for char in list(stateStr):
         initialState[posn] = char
         posn += 1
 
     return initialState
+
+initialStateRegex = re.compile(r'initial state: (.*)')
+def initialStateFromStr(starStr):
+    m = initialStateRegex.match(starStr)
+    return initialStateRaw(m.group(1), 0)
 
 
 transformRegex = re.compile(r'(.*) => (.*)')
@@ -37,12 +40,6 @@ for line in sys.stdin:
     (transform, result) = transformFromStr(line)
     if result == PLANT:
         transformMap[transform] = result
-
-
-#print(state)
-#print(minPosn)
-#print(maxPosn)
-#print(transformMap)
 
 def getMinMax(state): 
     minPosn = float("inf")
@@ -80,18 +77,39 @@ def printState(state, minPosn, maxPosn):
         toPrint += lookup(state, i)
     print(toPrint)
 
+def sumSolution(state, minPosn, maxPosn):
+    soln = 0
+    for i in range(minPosn, maxPosn + 1):
+        if i in state:
+            soln += i
+    return soln
+
+
+# i=18724 min=18683 max=18820
+# ###.........###..........###..................................................###.........###.......###................................###
+# i=18725 min=18684 max=18821
+# ###.........###..........###..................................................###.........###.......###................................###
+# i=18726 min=18685 max=18822
+# ###.........###..........###..................................................###.........###.......###................................###
+# it takes too long to compute step by step until 5,000,000,000
+# notice that the relative positions of the plants do not change,
+# it's moving sideways one by one
+# 18726 - 18685 = 41
+# 18726 - 18822 = -96
+# 5,000,000,000 - 41 = 4999999959
+# 5,000,000,000 + 96 = 5000000096
+ 
+solnState = initialStateRaw('###.........###..........###..................................................###.........###.......###................................###', 4999999959)
+print(sumSolution(solnState, 4999999959, 5000000096))
 
 #printState(state, minPosn, maxPosn)
-for i in range(0, 50000000000):
+for i in range(1, 50000000000+1):
     state = iterateGeneration(state, minPosn, maxPosn, transformMap)
     (minPosn, maxPosn) = getMinMax(state)
-    #print(minPosn)
-    #print(maxPosn)
+    #print(f'i={i} min={minPosn} max={maxPosn}')
     #printState(state, minPosn, maxPosn)
 
-soln = 0
-for i in range(minPosn, maxPosn + 1):
-    if i in state:
-        soln += i
 
-print(soln)
+print(sumSolution(state,minPosn,maxPosn))
+
+
