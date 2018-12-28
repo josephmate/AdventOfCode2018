@@ -23,8 +23,7 @@ def printBoard(state, carts):
         row += 1
         print()
 
-
-def solve(lines):
+def parse(lines):
     carts = {}
     currentState = []
     row = 0
@@ -43,8 +42,30 @@ def solve(lines):
             col += 1
         currentState.append(rowState)
         row += 1
+    return (carts, currentState)
+
+# returns 0: Colision location. None if no collision
+#         1: New position of the carts
+def iterate(state, carts):
+    newCarts = {}
+    for cart in carts:
+        newCarts[cart] = carts[cart]
+
+    return (None, carts)
+
+def solve(lines):
+    (carts, state) = parse(lines)
+    collision = None
     print(carts)
-    printBoard(currentState, carts)
+    printBoard(state, carts)
+    i = 1
+    while collision == None:
+        (collision, carts) = iterate(state, carts)
+        print(i)
+        print(carts)
+        printBoard(state, carts)
+        i += 1
+    
 
 
 with open('sample.txt') as sampleFile:
