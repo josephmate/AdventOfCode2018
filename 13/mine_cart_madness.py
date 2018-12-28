@@ -1,7 +1,11 @@
-LEFT_TO_UP = '/'
+RIGHT_TO_UP = '/'
+LEFT_TO_DOWN = '/'
 DOWN_TO_LEFT = '/'
-RIGHT_TO_UP = '\\'
+UP_TO_RIGHT = '/'
+RIGHT_TO_DOWN = '\\'
+LEFT_TO_UP = '\\'
 DOWN_TO_RIGHT = '\\'
+UP_TO_LEFT = '\\'
 UP_DOWN = '|'
 LEFT_RIGHT = '-'
 INTERSECT = '+'
@@ -44,14 +48,58 @@ def parse(lines):
         row += 1
     return (carts, currentState)
 
+def updateCartPosn(state, cartPosn, cartDirection):
+    if cartDirection == CART_UP:
+        newPosn = (cartPosn[0]-1, cartPosn[1])
+    elif cartDirection == CART_DOWN:
+        newPosn = (cartPosn[0]+1, cartPosn[1])
+    elif cartDirection == CART_LEFT:
+        newPosn = (cartPosn[0], cartPosn[1]-1)
+    else: #cartDirection == CART_RIGHT:
+        newPosn = (cartPosn[0], cartPosn[1]+1)
+
+    #print(f'"{cartDirection} : "{cartPosn} -> {newPosn}')
+
+    newTrack = state[newPosn[0]][newPosn[1]]
+    if cartDirection == CART_RIGHT and newTrack == RIGHT_TO_UP:
+        newDirection = CART_UP
+    elif cartDirection == CART_LEFT and newTrack == LEFT_TO_DOWN:
+        newDirection = CART_DOWN
+    elif cartDirection == CART_DOWN and newTrack == DOWN_TO_LEFT:
+        newDirection = CART_LEFT
+    elif cartDirection == CART_UP and newTrack == UP_TO_RIGHT:
+        newDirection = CART_RIGHT
+    elif cartDirection == CART_RIGHT and newTrack == RIGHT_TO_DOWN:
+        newDirection = CART_DOWN
+    elif cartDirection == CART_LEFT and newTrack == LEFT_TO_UP:
+        newDirection = CART_UP
+    elif cartDirection == CART_DOWN and newTrack == DOWN_TO_RIGHT:
+        newDirection = CART_RIGHT
+    elif cartDirection == CART_UP and newTrack == UP_TO_LEFT:
+        newDirection = CART_LEFT
+    elif newTrack == UP_DOWN:
+        newDirection = cartDirection
+    elif newTrack == LEFT_RIGHT:
+        newDirection = cartDirection
+    else: #newTrack == INTERSECT:
+        newDirection = cartDirection #TODO fix
+
+    #print(f'"{cartDirection} : "{cartPosn} -> {newPosn} : {newDirection}')
+    
+    return (newPosn, newDirection)
+
 # returns 0: Colision location. None if no collision
 #         1: New position of the carts
 def iterate(state, carts):
     newCarts = {}
     for cart in carts:
-        newCarts[cart] = carts[cart]
+        (newPosn, newDirection) = updateCartPosn(state, cart, carts[cart])
+        if newPosn in newCarts:
+            # there was a colision
+            return (newPosn, newCarts)
+        newCarts[newPosn] = newDirection
 
-    return (None, carts)
+    return (None, newCarts)
 
 def solve(lines):
     (carts, state) = parse(lines)
@@ -62,9 +110,10 @@ def solve(lines):
     while collision == None:
         (collision, carts) = iterate(state, carts)
         print(i)
-        print(carts)
         printBoard(state, carts)
         i += 1
+
+    print(collision)
     
 
 
