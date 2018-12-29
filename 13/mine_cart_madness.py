@@ -1,3 +1,5 @@
+import collections
+
 RIGHT_TO_UP = '/'
 LEFT_TO_DOWN = '/'
 DOWN_TO_LEFT = '/'
@@ -144,25 +146,34 @@ def solvePart1(lines):
 
 def iteratePart2(state, carts):
     newCarts = {}
-    cartsToRemove = set()
     for cart in carts:
         (newPosn, newCartState) = updateCartPosn(state, cart, carts[cart])
         if newPosn in newCarts:
-            cartsToRemove.add(newPosn)
+            del newCarts[newPosn]
         else:
             newCarts[newPosn] = newCartState
     
-    for cart in cartsToRemove:
-        del newCarts[cart]
     
-    return newCarts
+    sortedCarts = collections.OrderedDict(sorted(newCarts.items()))
+    return sortedCarts
+
+def printOrderedCarts(carts):
+    for cart in carts:
+        print(cart, end="")
+        print(", ", end="")
+    print()
 
 def solvePart2(lines):
-    (carts, state) = parse(lines)
+    (unsortedCarts, state) = parse(lines)
+
+    carts = collections.OrderedDict(sorted(unsortedCarts.items()))
+
+    printOrderedCarts(carts)
     while len(carts) > 1:
         carts = iteratePart2(state, carts)
-        printBoard(state, carts)
-        print('=============================================================')
+        printOrderedCarts(carts)
+        #printBoard(state, carts)
+        #print('=============================================================')
 
     for cart in carts:
         print(cart)
