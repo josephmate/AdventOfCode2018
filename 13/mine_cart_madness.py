@@ -145,13 +145,21 @@ def solvePart1(lines):
     print(collision)
 
 def iteratePart2(state, carts):
+    cartsItr = list(carts.keys())
     newCarts = {}
-    for cart in carts:
-        (newPosn, newCartState) = updateCartPosn(state, cart, carts[cart])
-        if newPosn in newCarts:
-            del newCarts[newPosn]
-        else:
-            newCarts[newPosn] = newCartState
+
+    for cart in cartsItr:
+        if cart in carts: # cart might have been removed before by an earlier cart
+            (newPosn, newCartState) = updateCartPosn(state, cart, carts[cart])
+
+            del carts[cart] # remove the old posn
+
+            if newPosn in carts: # check for collision in old
+                del carts[newPosn]
+            elif newPosn in newCarts: # check for collision in new
+                del newCarts[newPosn]
+            else:
+                newCarts[newPosn] = newCartState
     
     
     sortedCarts = collections.OrderedDict(sorted(newCarts.items()))

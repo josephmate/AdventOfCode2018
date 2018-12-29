@@ -1,4 +1,4 @@
 input.txt
 *.swp
-sample.txt
+sample*.txt
 out.txt
