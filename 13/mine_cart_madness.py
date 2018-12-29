@@ -123,34 +123,63 @@ def updateCartPosn(state, cartPosn, cartState):
 
 # returns 0: Colision location. None if no collision
 #         1: New position of the carts
-def iterate(state, carts):
+def iteratePart1(state, carts):
     newCarts = {}
     for cart in carts:
-        (newPosn, newDirection) = updateCartPosn(state, cart, carts[cart])
+        (newPosn, newCartState) = updateCartPosn(state, cart, carts[cart])
         if newPosn in newCarts:
             # there was a colision
             return (newPosn, newCarts)
-        newCarts[newPosn] = newDirection
+        newCarts[newPosn] = newCartState
 
     return (None, newCarts)
 
-def solve(lines):
+def solvePart1(lines):
     (carts, state) = parse(lines)
     collision = None
-    printBoard(state, carts)
-    i = 1
     while collision == None:
-        (collision, carts) = iterate(state, carts)
-        print(i)
-        printBoard(state, carts)
-        i += 1
+        (collision, carts) = iteratePart1(state, carts)
 
     print(collision)
+
+def iteratePart2(state, carts):
+    newCarts = {}
+    cartsToRemove = set()
+    for cart in carts:
+        (newPosn, newCartState) = updateCartPosn(state, cart, carts[cart])
+        if newPosn in newCarts:
+            cartsToRemove.add(newPosn)
+        else:
+            newCarts[newPosn] = newCartState
+    
+    for cart in cartsToRemove:
+        del newCarts[cart]
+    
+    return newCarts
+
+def solvePart2(lines):
+    (carts, state) = parse(lines)
+    while len(carts) > 1:
+        carts = iteratePart2(state, carts)
+        printBoard(state, carts)
+        print('=============================================================')
+
+    for cart in carts:
+        print(cart)
     
 
-
+print("Part 1")
 with open('sample.txt') as sampleFile:
-    solve(sampleFile)
+    solvePart1(sampleFile)
 
 with open('input.txt') as sampleFile:
-    solve(sampleFile)
+    solvePart1(sampleFile)
+
+print("Part 2")
+with open('samplePart2.txt') as sampleFile:
+    solvePart2(sampleFile)
+with open('input.txt') as sampleFile:
+    solvePart2(sampleFile)
+
+
+
