@@ -92,11 +92,31 @@ def solve2(val):
 
 
 
+print(f'solve2("0124515891") = {solve2("0124515891")} should be: 5')
 
-
-print(f'solve2("51589") = {solve2("51589")} should be: 9')
-print(f'solve2("01245") = {solve2("01245")} should be: 5')
-print(f'solve2("92510") = {solve2("92510")} should be: 18')
-print(f'solve2("59414") = {solve2("59414")} should be: 2018')
-print(f'solve2("540391") = {solve2("540391")}')
+if False:
+    print(f'solve2("51589") = {solve2("51589")} should be: 9')
+    print(f'solve2("515891") = {solve2("515891")} should be: 9')
+    print(f'solve2("5158916") = {solve2("5158916")} should be: 9')
+    print(f'solve2("51589167") = {solve2("51589167")} should be: 9')
+    print(f'solve2("515891677") = {solve2("515891677")} should be: 9')
+    print(f'solve2("5158916779") = {solve2("5158916779")} should be: 9')
+    print(f'solve2("01245") = {solve2("01245")} should be: 5')
+    print(f'solve2("012451") = {solve2("012451")} should be: 5')
+    print(f'solve2("0124515") = {solve2("0124515")} should be: 5')
+    print(f'solve2("01245158") = {solve2("01245158")} should be: 5')
+    print(f'solve2("012451589") = {solve2("012451589")} should be: 5')
+    print(f'solve2("92510") = {solve2("92510")} should be: 18')
+    print(f'sovle2("925107") = {solve2("925107")} should be: 18')
+    print(f'sovle2("9251071") = {solve2("9251071")} should be: 18')
+    print(f'sovle2("92510710") = {solve2("92510710")} should be: 18')
+    print(f'sovle2("925107108") = {solve2("925107108")} should be: 18')
+    print(f'sovle2("9251071085") = {solve2("9251071085")} should be: 18')
+    print(f'solve2("59414") = {solve2("59414")} should be: 2018')
+    print(f'solve2("594142") = {solve2("594142")} should be: 2018')
+    print(f'solve2("5941429") = {solve2("5941429")} should be: 2018')
+    print(f'solve2("59414298") = {solve2("59414298")} should be: 2018')
+    print(f'solve2("594142988") = {solve2("594142988")} should be: 2018')
+    print(f'solve2("5941429882") = {solve2("5941429882")} should be: 2018')
+    print(f'solve2("540391") = {solve2("540391")}')
 
